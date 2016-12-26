@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "708385442207",
+    "firebase_url": "https://openshop-3cc7f.firebaseio.com",
+    "project_id": "openshop-3cc7f",
+    "storage_bucket": "openshop-3cc7f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:708385442207:android:88c2d391918f6b36",
+        "android_client_info": {
+          "package_name": "bf.io.openshop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "708385442207-e0ts3870cl9ruk00kd4rvmcv85rn8bnu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzcneHEq3vjFV4PP4IsKXkw6P1unkNZ08"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
