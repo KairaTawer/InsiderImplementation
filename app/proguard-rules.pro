@@ -10,3 +10,5 @@
 # Add any project specific keep options here:
 
 # http://proguard.sourceforge.net/index.html#manual/usage.html
+-keep class com.useinsider.insider.** { *; }
+-keep class org.openudid.** { *; }

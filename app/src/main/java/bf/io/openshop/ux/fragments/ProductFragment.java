@@ -95,6 +95,7 @@ public class ProductFragment extends Fragment {
     private TextView productPriceTv;
     private TextView productInfoTv;
     private TextView productPriceDiscountPercentTv;
+    private TextView productIdTv;
 
     /**
      * Refers to the displayed product.
@@ -162,6 +163,7 @@ public class ProductFragment extends Fragment {
         contentScrollLayout = (ScrollView) view.findViewById(R.id.product_scroll_layout);
 
         productNameTv = (TextView) view.findViewById(R.id.product_name);
+        productIdTv = (TextView) view.findViewById(R.id.productIdTv);
         productPriceDiscountPercentTv = (TextView) view.findViewById(R.id.product_price_discount_percent);
         productPriceDiscountTv = (TextView) view.findViewById(R.id.product_price_discount);
         productPriceTv = (TextView) view.findViewById(R.id.product_price);
@@ -176,6 +178,9 @@ public class ProductFragment extends Fragment {
 
         long productId = getArguments().getLong(PRODUCT_ID, 0);
         getProduct(productId);
+
+        productIdTv.setText("Product Id: " + productId);
+
         return view;
     }
 

@@ -194,4 +194,9 @@
     <string name="content_description_intro_screen">Úvodní obrazovka</string>
     <string name="content_description_product_image">Obrázek produktu</string>
     <string name="content_description_shipping_info">Informace o dopravě</string>
+
+    <!--<string name="insider_partner_name">test</string>-->
+    <!--<string name="insider_landing_activity">bf.io.openshop.MainActivity</string>-->
+    <!--<bool name="insider_push_collapse">false</bool>-->
+
 </resources>

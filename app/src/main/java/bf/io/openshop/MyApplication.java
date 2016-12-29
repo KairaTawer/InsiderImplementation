@@ -8,21 +8,17 @@ import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.Settings;
-import android.support.annotation.VisibleForTesting;
-import android.support.test.espresso.IdlingResource;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.useinsider.insider.Insider;
-
+import com.useinsider.insider.config.Geofence;
+import com.useinsider.insider.config.Push;
 import java.util.Locale;
-
 import bf.io.openshop.api.OkHttpStack;
-import bf.io.openshop.testing.EspressoIdlingResource;
 import bf.io.openshop.ux.MainActivity;
 import timber.log.Timber;
 
@@ -80,7 +76,14 @@ public class MyApplication extends Application {
         super.onCreate();
         mInstance = this;
 
-        Insider.Instance.init(this);
+        Insider.Instance.init(
+                this,
+                "test",
+                "708385442207",
+                MainActivity.class,
+                Push.WILL_COLLAPSE,
+                Geofence.NOT_ENABLED
+        );
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
@@ -132,16 +135,6 @@ public class MyApplication extends Application {
             mRequestQueue = Volley.newRequestQueue(this, new OkHttpStack());
         }
         return mRequestQueue;
-    }
-
-    @VisibleForTesting
-    public void setRequestQueue(RequestQueue requestQueue) {
-        mRequestQueue = requestQueue;
-    }
-
-    @VisibleForTesting
-    public IdlingResource getCountingIdlingResource() {
-        return EspressoIdlingResource.getIdlingResource();
     }
 
     public <T> void addToRequestQueue(Request<T> req, String tag) {

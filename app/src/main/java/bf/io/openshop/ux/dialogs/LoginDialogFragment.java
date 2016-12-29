@@ -396,8 +396,6 @@ public class LoginDialogFragment extends DialogFragment {
 
         // Invalidate GCM token for new registration with authorized user.
         SettingsMy.setTokenSentToServer(false);
-        if (getActivity() instanceof MainActivity)
-            ((MainActivity) getActivity()).registerGcmOnServer();
 
         MainActivity.invalidateDrawerMenuHeader();
 

@@ -395,7 +395,6 @@ public class SplashActivity extends AppCompatActivity {
      */
     private void animateContentVisible() {
         if (layoutIntroScreen != null && layoutContent != null && layoutIntroScreen.getVisibility() == View.VISIBLE) {
-            EspressoIdlingResource.increment();
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -432,7 +431,6 @@ public class SplashActivity extends AppCompatActivity {
                                             .setListener(null);
                                 }
                             }
-                            EspressoIdlingResource.decrement();
                         }
                     }, 330);
                 }

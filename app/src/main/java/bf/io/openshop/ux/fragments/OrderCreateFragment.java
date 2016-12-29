@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.useinsider.insider.Insider;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,6 +38,7 @@ import bf.io.openshop.api.GsonRequest;
 import bf.io.openshop.entities.User;
 import bf.io.openshop.entities.cart.Cart;
 import bf.io.openshop.entities.cart.CartProductItem;
+import bf.io.openshop.entities.cart.CartProductItemVariant;
 import bf.io.openshop.entities.delivery.Delivery;
 import bf.io.openshop.entities.delivery.DeliveryRequest;
 import bf.io.openshop.entities.delivery.Payment;
@@ -128,7 +130,25 @@ public class OrderCreateFragment extends Fragment {
             @Override
             public void onSingleClick(View v) {
                 if (isRequiredFieldsOk()) {
-                    // Prepare data
+
+                    List<CartProductItem> items = cart.getItems();
+
+                    for (CartProductItem item:items) {
+
+                        CartProductItemVariant itemVariant = item.getVariant();
+
+                        Insider.Instance.trackPurchasedItems(
+                                getActivity(),
+                                Long.toString(item.getId()),
+                                itemVariant.getName(),
+                                Long.toString(itemVariant.getCategory()),
+                                Long.toString(itemVariant.getProductId()),
+                                itemVariant.getPrice() + 0.9,
+                                itemVariant.getCurrency()
+                        );
+
+                    }
+
                     Order order = new Order();
                     order.setName(Utils.getTextFromInputLayout(nameInputWrapper));
                     order.setCity(Utils.getTextFromInputLayout(cityInputWrapper));

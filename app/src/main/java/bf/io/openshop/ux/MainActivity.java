@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.MatrixCursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,6 +40,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.transition.TransitionInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -48,6 +50,7 @@ import android.widget.TextView;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.useinsider.insider.Insider;
 
 import org.json.JSONObject;
 
@@ -69,11 +72,9 @@ import bf.io.openshop.entities.drawerMenu.DrawerItemCategory;
 import bf.io.openshop.entities.drawerMenu.DrawerItemPage;
 import bf.io.openshop.entities.order.Order;
 import bf.io.openshop.interfaces.LoginDialogInterface;
-import bf.io.openshop.utils.Analytics;
 import bf.io.openshop.utils.JsonUtils;
 import bf.io.openshop.utils.MsgUtils;
-import bf.io.openshop.utils.MyRegistrationIntentService;
-import bf.io.openshop.utils.Utils;
+import bf.io.openshop.utils.RegistrationIntentService;
 import bf.io.openshop.ux.dialogs.LoginDialogFragment;
 import bf.io.openshop.ux.fragments.AccountEditFragment;
 import bf.io.openshop.ux.fragments.AccountFragment;
@@ -114,11 +115,6 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
      * Reference number of products in shopping cart.
      */
     private int cartCountNotificationValue = CONST.DEFAULT_EMPTY_ID;
-
-    /**
-     * BroadcastReceiver used in service for Gcm registration.
-     */
-    private BroadcastReceiver mRegistrationBroadcastReceiver;
 
     // Fields used in searchView.
     private SimpleCursorAdapter searchSuggestionsAdapter;
@@ -176,6 +172,12 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        redirectFromPush(intent);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mInstance = this;
@@ -211,46 +213,39 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
         // Initialize list for search suggestions
         searchSuggestionsList = new ArrayList<>();
 
-        // GCM registration //
-        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                boolean sentToken = SettingsMy.getTokenSentToServer();
-                if (sentToken) {
-                    Timber.d("Gcm registration success.");
-                } else {
-                    Timber.e("Gcm registration failed. Device isn't registered on server.");
-                }
-            }
-        };
-        registerGcmOnServer();
-        // end of GCM registration //
-
         addInitialFragment();
 
-        // Opened by notification with some data
-        if (this.getIntent() != null && this.getIntent().getExtras() != null) {
-            String target = this.getIntent().getExtras().getString(CONST.BUNDLE_PASS_TARGET, "");
-            String title = this.getIntent().getExtras().getString(CONST.BUNDLE_PASS_TITLE, "");
-            Timber.d("Start notification with banner target: %s", target);
+        redirectFromPush(null);
 
-            Banner banner = new Banner();
-            banner.setTarget(target);
-            banner.setName(title);
-            onBannerSelected(banner);
+    }
 
+    private void redirectFromPush(Intent redirectIntent) {
+        Object type, productId;
+        if (redirectIntent != null && redirectIntent.getData() != null) {
+            Uri data = redirectIntent.getData();
+            type = data.getQueryParameter("type");
+            productId = data.getQueryParameter("productId");
+        } else {
+            type = Insider.Instance.getDeepLinkData("type");
+            productId = Insider.Instance.getDeepLinkData("productId");
+        }
+        redirect(type, productId);
+    }
+
+    private void redirect(Object type, Object productId) {
+        if(isObjSet(type)) {
+            switch(type.toString()) {
+                case "product":
+                    if (isObjSet(productId)) {
+                        onProductSelected(Long.valueOf(productId.toString()));
+                    }
+                    break;
+            }
         }
     }
 
-    /**
-     * Run service for Gcm token generation and registering device on servers.
-     * Registration is needed for notification messages.
-     */
-    public void registerGcmOnServer() {
-        if (Utils.checkPlayServices(this)) {
-            Intent intent = new Intent(this, MyRegistrationIntentService.class);
-            startService(intent);
-        }
+    private boolean isObjSet(Object isObj) {
+        return isObj != null && isObj.toString().length() > 0;
     }
 
     @Override
@@ -759,22 +754,10 @@ public class MainActivity extends AppCompatActivity implements DrawerFragment.Fr
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        // FB base events logging
-
-        // GCM registration
-        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-                new IntentFilter(SettingsMy.REGISTRATION_COMPLETE));
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
         // FB base events logging
         MyApplication.getInstance().cancelPendingRequests(CONST.MAIN_ACTIVITY_REQUESTS_TAG);
 
-        // GCM registration
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
     }
 }
