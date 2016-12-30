@@ -79,7 +79,7 @@ public class MyApplication extends Application {
         Insider.Instance.init(
                 this,
                 "test",
-                "708385442207",
+                "650120157709",
                 MainActivity.class,
                 Push.WILL_COLLAPSE,
                 Geofence.NOT_ENABLED
